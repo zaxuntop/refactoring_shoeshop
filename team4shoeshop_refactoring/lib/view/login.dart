@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:team4shoeshop_refactoring/view/shoeslistpage.dart';
 import 'joincustomer.dart'; // 회원가입 화면 import
 
 class LoginPage extends StatefulWidget {
@@ -28,9 +30,14 @@ class _LoginPageState extends State<LoginPage> {
       final data = json.decode(resBody);
 
       if (data["result"] == "success") {
+        // ✅ 로그인된 사용자 cid 저장
+        final box = GetStorage();
+        box.write('p_userId', idController.text.trim());
+
         Get.snackbar("환영합니다", "${data["cname"]}님");
-        // TODO: 로그인 성공 후 이동할 페이지로 이동
-        // 예: Get.to(() => MainPage());
+        Future.delayed(const Duration(seconds: 1), () {
+          Get.offAll(() => const Shoeslistpage());
+        });
       } else {
         Get.snackbar("실패", "아이디 또는 비밀번호가 틀렸습니다.");
       }
@@ -62,14 +69,8 @@ class _LoginPageState extends State<LoginPage> {
               decoration: const InputDecoration(labelText: "비밀번호"),
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: login,
-              child: const Text("로그인"),
-            ),
-            TextButton(
-              onPressed: goToJoin,
-              child: const Text("회원가입"),
-            ),
+            ElevatedButton(onPressed: login, child: const Text("로그인")),
+            TextButton(onPressed: goToJoin, child: const Text("회원가입")),
           ],
         ),
       ),

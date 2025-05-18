@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
+import 'package:team4shoeshop_refactoring/view/login.dart';
 
 class Joincustomer extends StatefulWidget {
   const Joincustomer({super.key});
@@ -62,7 +63,9 @@ class _JoincustomerState extends State<Joincustomer> {
 
       if (data["result"] == "OK") {
         Get.snackbar("성공", "회원가입이 완료되었습니다.");
-        Get.back();
+        Future.delayed(const Duration(seconds: 1), () {
+          Get.offAll(() => const LoginPage()); // 모든 화면 제거 후 로그인으로 이동
+        });
       } else {
         Get.snackbar("실패", "회원가입에 실패했습니다.");
       }
@@ -78,17 +81,43 @@ class _JoincustomerState extends State<Joincustomer> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
-          child: Column(children: [
-            TextField(controller: idController, decoration: const InputDecoration(labelText: "아이디")),
-            ElevatedButton(onPressed: checkDuplicateId, child: const Text("중복체크")),
-            TextField(controller: pwController, decoration: const InputDecoration(labelText: "비밀번호")),
-            TextField(controller: nameController, decoration: const InputDecoration(labelText: "이름")),
-            TextField(controller: phoneController, decoration: const InputDecoration(labelText: "전화번호")),
-            TextField(controller: emailController, decoration: const InputDecoration(labelText: "이메일")),
-            TextField(controller: addressController, decoration: const InputDecoration(labelText: "주소")),
-            const SizedBox(height: 20),
-            ElevatedButton(onPressed: registerCustomer, child: const Text("회원가입")),
-          ]),
+          child: Column(
+            children: [
+              TextField(
+                controller: idController,
+                decoration: const InputDecoration(labelText: "아이디"),
+              ),
+              ElevatedButton(
+                onPressed: checkDuplicateId,
+                child: const Text("중복체크"),
+              ),
+              TextField(
+                controller: pwController,
+                decoration: const InputDecoration(labelText: "비밀번호"),
+              ),
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(labelText: "이름"),
+              ),
+              TextField(
+                controller: phoneController,
+                decoration: const InputDecoration(labelText: "전화번호"),
+              ),
+              TextField(
+                controller: emailController,
+                decoration: const InputDecoration(labelText: "이메일"),
+              ),
+              TextField(
+                controller: addressController,
+                decoration: const InputDecoration(labelText: "주소"),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: registerCustomer,
+                child: const Text("회원가입"),
+              ),
+            ],
+          ),
         ),
       ),
     );
