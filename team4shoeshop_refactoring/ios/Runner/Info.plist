@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Team4shoeshop Refactoring</string>
+	<string>Team4shoeshop</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -13,7 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>team4shoeshop_refactoring</string>
+	<string>team4shoeshop</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -45,13 +45,7 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-  <key>NSCameraUsageDescription</key>
-  <string>Used to demonstrate image picker plugin</string>
-  <key>NSMicrophoneUsageDescription</key>
-  <string>Used to capture audio for image picker plugin</string>
-  <key>NSPhotoLibraryUsageDescription</key>
-  <string>Used to demonstrate image picker plugin</string>
-  <!-- GPS -->
+    <!-- GPS -->
   <key>NSLocationWhenInUseUsageDescription</key>
   <string>This app needs access to location when open.</string>
 

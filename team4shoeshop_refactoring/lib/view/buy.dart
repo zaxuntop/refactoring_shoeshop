@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'shoeslistpage.dart'; // ✅ 추가
 
 class BuyPage extends StatefulWidget {
   const BuyPage({super.key});
@@ -63,7 +64,8 @@ class _BuyPageState extends State<BuyPage> {
 
       if (data["result"] == "OK") {
         Get.snackbar("구매 완료", "상품을 구매하였습니다");
-        Get.back();
+        await Future.delayed(const Duration(seconds: 1));
+        Get.offAll(() => const Shoeslistpage()); // ✅ 홈으로 이동
       } else {
         Get.snackbar("실패", "구매 실패: ${data["message"] ?? "알 수 없음"}");
       }
@@ -84,7 +86,8 @@ class _BuyPageState extends State<BuyPage> {
 
       if (data["result"] == "OK") {
         Get.snackbar("구매 완료", "선택한 상품을 모두 구매하였습니다");
-        Get.back();
+        await Future.delayed(const Duration(seconds: 1));
+        Get.offAll(() => const Shoeslistpage()); // ✅ 홈으로 이동
       } else {
         Get.snackbar("실패", "구매 실패: ${data["message"] ?? "알 수 없음"}");
       }
@@ -93,34 +96,35 @@ class _BuyPageState extends State<BuyPage> {
     setState(() => isProcessing = false);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final arguments = Get.arguments;
-    final isSingleBuy = arguments["product"] != null;
+@override
+Widget build(BuildContext context) {
+  final arguments = Get.arguments ?? {};
+  final isSingleBuy = arguments["product"] != null;
+  final items = arguments["items"] ?? [];
 
-    return Scaffold(
-      appBar: AppBar(title: const Text("결제하기")),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (isSingleBuy)
-              _buildSingleBuySummary(arguments)
-            else
-              _buildMultipleBuySummary(arguments["items"]),
-            const SizedBox(height: 16),
-            passwordField(),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: isProcessing ? null : submitPurchase,
-              child: const Text("결제하기"),
-            ),
-          ],
-        ),
+  return Scaffold(
+    appBar: AppBar(title: const Text("결제하기")),
+    body: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (isSingleBuy)
+            _buildSingleBuySummary(arguments)
+          else
+            _buildMultipleBuySummary(items),
+          const SizedBox(height: 16),
+          passwordField(),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: isProcessing ? null : submitPurchase,
+            child: const Text("결제하기"),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildSingleBuySummary(Map args) {
     final product = args["product"];
