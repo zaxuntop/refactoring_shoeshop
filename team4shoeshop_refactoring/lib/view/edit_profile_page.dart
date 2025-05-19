@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
-import 'shoeslistpage.dart';
+import 'package:team4shoeshop_refactoring/view/shoeslistpage.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -14,103 +15,257 @@ class EditProfilePage extends StatefulWidget {
 
 class _EditProfilePageState extends State<EditProfilePage> {
   final box = GetStorage();
+
   final nameController = TextEditingController();
+  final passwordController = TextEditingController();
   final phoneController = TextEditingController();
   final emailController = TextEditingController();
   final addressController = TextEditingController();
+  final detailAddressController = TextEditingController();
   final cardNumController = TextEditingController();
   final cardCvcController = TextEditingController();
   final cardDateController = TextEditingController();
 
-  String userId = "";
+  String userId = '';
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
     userId = box.read('p_userId') ?? '';
-    if (userId.isNotEmpty) {
-      fetchCustomerInfo();
-    }
+    _loadProfile();
   }
 
-  Future<void> fetchCustomerInfo() async {
-    final url = Uri.parse("http://127.0.0.1:8000/customer_info?cid=$userId");
+  Future<void> _loadProfile() async {
+    if (userId.isEmpty) {
+      setState(() => isLoading = false);
+      return;
+    }
+
+    final url = Uri.parse('http://127.0.0.1:8000/customer_info?cid=$userId');
     final response = await http.get(url);
     final data = json.decode(utf8.decode(response.bodyBytes));
 
-    if (data["result"] == "OK") {
-      setState(() {
-        nameController.text = data["cname"] ?? '';
-        phoneController.text = data["cphone"] ?? '';
-        emailController.text = data["cemail"] ?? '';
-        addressController.text = data["caddress"] ?? '';
-        cardNumController.text = (data["ccardnum"] ?? '').toString();
-        cardCvcController.text = (data["ccardcvc"] ?? '').toString();
-        cardDateController.text = (data["ccarddate"] ?? '').toString();
-      });
-    } else {
-      Get.snackbar("오류", "회원 정보를 불러오지 못했습니다.");
+    if (data['result'] == 'OK') {
+      nameController.text = data['cname'] ?? '';
+      passwordController.text = data['cpassword'] ?? '';
+      phoneController.text = data['cphone'] ?? '';
+      emailController.text = data['cemail'] ?? '';
+      addressController.text = data['caddress'] ?? '';
+      cardNumController.text = (data['ccardnum'] ?? 0) != 0
+          ? formatCardNumber(data['ccardnum'].toString())
+          : '';
+      cardCvcController.text = (data['ccardcvc'] ?? 0).toString();
+      cardDateController.text = (data['ccarddate'] ?? 0).toString();
     }
+
+    setState(() => isLoading = false);
   }
 
-  Future<void> updateProfile() async {
-    final url = Uri.parse("http://127.0.0.1:8000/update_customer");
+  void _combineAddress() {
+    final basic = addressController.text.trim();
+    final detail = detailAddressController.text.trim();
+    final full = '$basic ${detail.isNotEmpty ? detail : ''}'.trim();
+    addressController.text = full;
+  }
+
+  Future<void> _updateProfile() async {
+    final url = Uri.parse('http://127.0.0.1:8000/update_customer');
     final request = http.MultipartRequest('POST', url);
+
+    final cardDateText = cardDateController.text.trim();
+    if (cardDateText.length != 4 ||
+        int.tryParse(cardDateText.substring(2)) == null ||
+        int.parse(cardDateText.substring(2)) < 1 ||
+        int.parse(cardDateText.substring(2)) > 12) {
+      Get.snackbar("입력 오류", "유효기간은 YYMM 형식의 4자리 숫자여야 하며, MM은 01~12입니다.",
+          backgroundColor: Colors.red, colorText: Colors.white);
+      return;
+    }
 
     request.fields['cid'] = userId;
     request.fields['cname'] = nameController.text.trim();
+    request.fields['cpassword'] = passwordController.text.trim();
     request.fields['cphone'] = phoneController.text.trim();
     request.fields['cemail'] = emailController.text.trim();
     request.fields['caddress'] = addressController.text.trim();
-    request.fields['ccardnum'] = cardNumController.text.trim().isEmpty ? "0" : cardNumController.text.trim();
-    request.fields['ccardcvc'] = cardCvcController.text.trim().isEmpty ? "0" : cardCvcController.text.trim();
-    request.fields['ccarddate'] = cardDateController.text.trim().isEmpty ? "0" : cardDateController.text.trim();
+    request.fields['ccardnum'] =
+        cardNumController.text.replaceAll('-', '').trim().isEmpty
+            ? '0'
+            : cardNumController.text.replaceAll('-', '');
+    request.fields['ccardcvc'] = cardCvcController.text.trim().isEmpty
+        ? '0'
+        : cardCvcController.text.trim();
+    request.fields['ccarddate'] = cardDateText;
 
     try {
       final response = await request.send();
-      final resBody = await response.stream.bytesToString();
-      final data = json.decode(resBody);
+      final body = await response.stream.bytesToString();
+      final data = json.decode(body);
 
-      if (data["result"] == "OK") {
-        Get.snackbar("완료", "회원 정보가 수정되었습니다.");
+      if (data['result'] == 'OK') {
+        Get.snackbar("수정 완료", "회원정보가 저장되었습니다.",
+            snackPosition: SnackPosition.BOTTOM,
+            duration: const Duration(seconds: 2));
         Future.delayed(const Duration(seconds: 1), () {
           Get.offAll(() => const Shoeslistpage());
         });
       } else {
-        Get.snackbar("오류", "회원 정보 수정에 실패했습니다.");
+        Get.snackbar("오류", "수정 실패", backgroundColor: Colors.red, colorText: Colors.white);
       }
     } catch (e) {
-      Get.snackbar("에러", "서버 오류: $e");
+      Get.snackbar("에러", "서버 오류: $e", backgroundColor: Colors.red, colorText: Colors.white);
     }
+  }
+
+  Widget _buildField(
+    TextEditingController controller,
+    String label, {
+    bool obscure = false,
+    bool readOnly = false,
+    TextInputType keyboard = TextInputType.text,
+    List<TextInputFormatter>? formatters,
+    Function(String)? onChanged,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: TextField(
+        controller: controller,
+        obscureText: obscure,
+        readOnly: readOnly,
+        keyboardType: keyboard,
+        inputFormatters: formatters,
+        onChanged: onChanged,
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: Icon(Icons.edit),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          filled: true,
+          fillColor: Colors.grey[100],
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        ),
+      ),
+    );
+  }
+
+  String formatCardNumber(String number) {
+    number = number.replaceAll(RegExp(r'\D'), '');
+    final buffer = StringBuffer();
+    for (int i = 0; i < number.length; i++) {
+      buffer.write(number[i]);
+      if ((i + 1) % 4 == 0 && i + 1 != number.length) buffer.write('-');
+    }
+    return buffer.toString();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("회원정보 수정")),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              TextField(controller: nameController, decoration: const InputDecoration(labelText: "이름")),
-              TextField(controller: phoneController, decoration: const InputDecoration(labelText: "전화번호")),
-              TextField(controller: emailController, decoration: const InputDecoration(labelText: "이메일")),
-              TextField(controller: addressController, decoration: const InputDecoration(labelText: "주소")),
-              const SizedBox(height: 12),
-              const Divider(),
-              TextField(controller: cardNumController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: "카드번호")),
-              TextField(controller: cardCvcController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: "CVC")),
-              TextField(controller: cardDateController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: "유효기간(예: 202512)")),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: updateProfile,
-                child: const Text("수정 완료"),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  _buildField(nameController, '이름'),
+                  _buildField(passwordController, '비밀번호', obscure: true),
+                  _buildField(
+                    phoneController,
+                    '전화번호',
+                    keyboard: TextInputType.number,
+                    formatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(11),
+                      PhoneNumberFormatter(),
+                    ],
+                  ),
+                  _buildField(emailController, '이메일'),
+                  const SizedBox(height: 16),
+                  _buildField(addressController, '기본 주소'),
+                  _buildField(detailAddressController, '상세 주소', onChanged: (_) => _combineAddress()),
+                  _buildField(addressController, '최종 주소 (자동완성)', readOnly: true),
+                  const Divider(height: 32),
+                  _buildField(
+                    cardNumController,
+                    '카드번호',
+                    keyboard: TextInputType.number,
+                    formatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(16),
+                      CardNumberFormatter(),
+                    ],
+                  ),
+                  _buildField(
+                    cardCvcController,
+                    'CVC',
+                    keyboard: TextInputType.number,
+                    formatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(3),
+                    ],
+                  ),
+                  _buildField(
+                    cardDateController,
+                    '유효기간 (YYMM)',
+                    keyboard: TextInputType.number,
+                    formatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(4),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: _updateProfile,
+                      icon: const Icon(Icons.check),
+                      label: const Text('수정 완료', style: TextStyle(fontSize: 16)),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
+    );
+  }
+}
+
+class PhoneNumberFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    var digits = newValue.text.replaceAll(RegExp(r'\D'), '');
+    final buffer = StringBuffer();
+    for (int i = 0; i < digits.length; i++) {
+      buffer.write(digits[i]);
+      if (i == 2 || i == 6) buffer.write('-');
+    }
+    final formatted = buffer.toString();
+    return TextEditingValue(
+      text: formatted.length > 13 ? formatted.substring(0, 13) : formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
+  }
+}
+
+class CardNumberFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    var digits = newValue.text.replaceAll(RegExp(r'\D'), '');
+    final buffer = StringBuffer();
+    for (int i = 0; i < digits.length; i++) {
+      buffer.write(digits[i]);
+      if ((i + 1) % 4 == 0 && i + 1 != digits.length) buffer.write('-');
+    }
+    final formatted = buffer.toString();
+    return TextEditingValue(
+      text: formatted.length > 19 ? formatted.substring(0, 19) : formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
     );
   }
 }

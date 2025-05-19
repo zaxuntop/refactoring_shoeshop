@@ -104,8 +104,7 @@ class _CartPageState extends State<CartPage> {
                     itemCount: items.length,
                     itemBuilder: (context, index) {
                       final item = items[index];
-                      final imageUrl = item["image_url"] +
-                          "?t=${DateTime.now().millisecondsSinceEpoch}";
+                      // final imageUrl = item["image_url"] + "?t=${DateTime.now().millisecondsSinceEpoch}";
                       final isSelected = selectedOids.contains(item["oid"]);
 
                       return Card(
