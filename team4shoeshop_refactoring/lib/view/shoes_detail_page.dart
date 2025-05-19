@@ -24,6 +24,7 @@ class _ShoesDetailPageState extends State<ShoesDetailPage> {
   int quantity = 1;
   List<Map<String, dynamic>> dealers = [];
   String? selectedDealer;
+  
 
   @override
   void initState() {
