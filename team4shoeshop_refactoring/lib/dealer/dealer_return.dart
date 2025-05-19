@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:http/http.dart' as http;
 import 'package:team4shoeshop_refactoring/dealer/dealer_return_datail.dart';
 import 'package:team4shoeshop_refactoring/dealer/dealer_widget/dealer_widget.dart';
 
@@ -14,61 +15,64 @@ class DealerReturn extends StatefulWidget {
 }
 
 class _DealerReturnState extends State<DealerReturn> {
-  List data = [];
+  final box = GetStorage();
+  List<Map<String, dynamic>> orders = [];
+  String eid = '';
 
   @override
   void initState() {
     super.initState();
-    getReturnData();
+    eid = box.read('adminId') ?? '';
+    if (eid.isNotEmpty) {
+      fetchOrders();
+    }
   }
 
-Future<void> getReturnData() async {
-  var response = await http.get(Uri.parse('http://127.0.0.1:8000/dreturns'));
-  final all = json.decode(utf8.decode(response.bodyBytes))['results'];
+  Future<void> fetchOrders() async {
+    final response = await http.get(Uri.parse('http://127.0.0.1:8000/list'));
+    if (response.statusCode == 200) {
+      final data = json.decode(utf8.decode(response.bodyBytes))['results'] ?? [];
 
-  data = all.where((item) {
-    final status = item['oreturnstatus']?.toString().trim() ?? '';
-    return status == '반품요청';
-  }).toList();
+      // ✅ 내 지점 & 반품 아닌 것만 필터
+      final filtered = data.where((item) {
+        return item['oeid'].toString() == eid &&
+        item['oreturndate'] == null;
+      }).cast<Map<String, dynamic>>().toList();
 
-  setState(() {});
-}
-
-
+      setState(() {
+        orders = filtered;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: DealerDrawer(),
       appBar: AppBar(
-        title: const Text("반품 내역"),
+        title: const Text("반품 요청 관리"),
       ),
-      body: data.isEmpty
-          ? const Center(child: Text("반품 내역이 없습니다."))
+      drawer: DealerDrawer(),
+      body: orders.isEmpty
+          ? const Center(child: Text("주문 내역이 없습니다."))
           : ListView.builder(
-              itemCount: data.length,
+              itemCount: orders.length,
               itemBuilder: (context, index) {
-                final item = data[index];
-                final hasReturn = (item['oreturndate'] != null && item['oreturndate'].toString().isNotEmpty);
+                final item = orders[index];
+                final price = item['pprice'] ?? 0;
+                final count = item['ocount'] ?? 0;
+                final total = price * count;
 
                 return Card(
-                  margin: const EdgeInsets.all(8),
-                  color: hasReturn ? Colors.red[50] : null,
+                  margin: const EdgeInsets.all(10),
                   child: ListTile(
-                    leading: const Icon(Icons.assignment_return),
-                    title: Text(item['pname'] ?? '상품명 없음'),
-                    subtitle: Text(
-                      '주문일: ${item['odate']} / 반품일: ${item['oreturndate'] ?? '없음'}',
-                      style: TextStyle(
-                        color: hasReturn ? Colors.red : Colors.black87,
-                        fontWeight: hasReturn ? FontWeight.bold : FontWeight.normal,
-                      ),
-                    ),
-                    trailing: const Icon(Icons.arrow_forward_ios),
+                    title: Text("상품: ${item['pbrand']} / ${item['ocount']}개"),
+                    subtitle: Text("주문일: ${item['odate']}"),
+                    trailing: Text("₩$total"),
                     onTap: () async {
+              
                       final result = await Get.to(() => DealerReturnDetail(orderMap: item));
                       if (result == true) {
-                        getReturnData();
+                        fetchOrders(); 
                       }
                     },
                   ),

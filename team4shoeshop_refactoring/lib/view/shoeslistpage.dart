@@ -18,7 +18,7 @@ class Shoeslistpage extends StatefulWidget {
 }
 
 class _ShoeslistpageState extends State<Shoeslistpage> {
-  final box = GetStorage(); // ✅ GetStorage 인스턴스
+  final box = GetStorage();
   String userId = "";
 
   List<Map<String, dynamic>> _products = [];
@@ -47,71 +47,90 @@ class _ShoeslistpageState extends State<Shoeslistpage> {
 
   Widget _buildProductCard(Map<String, dynamic> product) {
     final selectedSize = product['psize'] ?? 250;
+    final isSoldOut = (product['pstock'] ?? 0) <= 0;
 
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: Colors.black, width: 2),
-      ),
-      child: InkWell(
-        onTap: () {
-          Get.to(
-            () => ShoesDetailPage(product: product, selectedSize: selectedSize),
-          );
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                flex: 7,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    'http://127.0.0.1:8000/view/${product['pid']}?t=${DateTime.now().millisecondsSinceEpoch}',
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      color: Colors.grey[300],
-                      child: const Center(child: Text("이미지 없음")),
-                    ),
+    return Opacity(
+      opacity: isSoldOut ? 0.5 : 1.0,
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: Colors.black, width: 2),
+        ),
+        child: InkWell(
+          onTap: isSoldOut
+              ? null
+              : () {
+                  Get.to(() => ShoesDetailPage(product: product, selectedSize: selectedSize));
+                },
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  flex: 7,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          'http://127.0.0.1:8000/view/${product['pid']}?t=${DateTime.now().millisecondsSinceEpoch}',
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => Container(
+                            color: Colors.grey[300],
+                            child: const Center(child: Text("이미지 없음")),
+                          ),
+                        ),
+                      ),
+                      if (isSoldOut)
+                        Positioned(
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            color: Colors.black.withOpacity(0.7),
+                            child: const Text(
+                              '품절',
+                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Expanded(
-                flex: 5,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      product["pname"],
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                const SizedBox(height: 8),
+                Expanded(
+                  flex: 5,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        product["pname"],
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Text(
-                      '${product["pprice"]}원',
-                      style: const TextStyle(
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
+                      Text(
+                        '${product["pprice"]}원',
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    Text(
-                      '색상: ${product["pcolor"]}',
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                    Text(
-                      '사이즈: ${product["psize"]}',
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                  ],
+                      Text('브랜드: ${product["pbrand"] ?? ""}', style: const TextStyle(fontSize: 12)),
+                      Text('색상: ${product["pcolor"]}', style: const TextStyle(fontSize: 12)),
+                      Text('사이즈: ${product["psize"]}', style: const TextStyle(fontSize: 12)),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -186,10 +205,14 @@ class _ShoeslistpageState extends State<Shoeslistpage> {
       ),
     );
   }
+
+  
 }
+
 
 class MainDrawer extends StatelessWidget {
   final box = GetStorage();
+
   MainDrawer({super.key});
 
   @override

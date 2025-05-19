@@ -70,7 +70,7 @@ class _DealerReturnDetailState extends State<DealerReturnDetail> {
             Text('상품명: ${order['pname']}'),
 
           Text('주문일: ${order['odate']}'),
-            Text('주문수량: ${order['ocount']}'),
+            Text('주문수량: ${order['ocount']}개'),
             const SizedBox(height: 20),
             TextField(
               controller: returnCountController,
