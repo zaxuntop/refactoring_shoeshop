@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:team4shoeshop_refactoring/view/adminlogin.dart';
 import 'package:team4shoeshop_refactoring/view/shoeslistpage.dart';
 import 'joincustomer.dart'; // 회원가입 화면 import
 
@@ -71,6 +72,12 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(height: 20),
             ElevatedButton(onPressed: login, child: const Text("로그인")),
             TextButton(onPressed: goToJoin, child: const Text("회원가입")),
+            ElevatedButton(
+              onPressed: () {
+                Get.to(() => const Adminlogin());
+              },
+              child: const Text("관리자 로그인"),
+            ),
           ],
         ),
       ),
