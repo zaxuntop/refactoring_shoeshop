@@ -42,7 +42,7 @@ class _AdminloginState extends State<Adminlogin> {
     }
 
     try {
-      final url = Uri.parse("http://127.0.0.1:8000/employee_login");
+      final url = Uri.parse("http://192.168.50.236:8000/employee_login");
       final request = http.MultipartRequest("POST", url);
       request.fields['eid'] = id;
       request.fields['epassword'] = pw;

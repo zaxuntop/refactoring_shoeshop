@@ -59,7 +59,7 @@ class _LocationSearchState extends State<LocationSearch> {
   }
 
   Future<void> fetchDealers() async {
-    final url = Uri.parse("http://127.0.0.1:8000/employee_list");
+    final url = Uri.parse("http://192.168.50.236:8000/employee_list");
     final response = await http.get(url);
     final data = json.decode(utf8.decode(response.bodyBytes));
 

@@ -22,7 +22,7 @@ class _AdminDailyRevenueState extends State<AdminDailyRevenue> {
 
   Future<void> fetchChartData() async {
     try {
-      final url = Uri.parse("http://127.0.0.1:8000/daily_revenue");
+      final url = Uri.parse("http://192.168.50.236:8000/daily_revenue");
       final response = await http.get(url);
       final data = json.decode(utf8.decode(response.bodyBytes));
 

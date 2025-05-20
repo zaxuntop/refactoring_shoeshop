@@ -34,7 +34,7 @@ class _DealerReturnDetailState extends State<DealerReturnDetail> {
     final formattedDate = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
 
     final response = await http.post(
-      Uri.parse('http://127.0.0.1:8000/update_return'),
+      Uri.parse('http://192.168.50.236:8000/update_return'),
       body: {
         'oid': widget.orderMap['oid'].toString(),
         'oreturncount': returnCountController.text,

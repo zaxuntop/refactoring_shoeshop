@@ -33,7 +33,7 @@ class _ShoeslistpageState extends State<Shoeslistpage> {
   }
 
   Future<void> fetchProducts() async {
-    final url = Uri.parse("http://127.0.0.1:8000/product_list");
+    final url = Uri.parse("http://192.168.50.236:8000/product_list");
     final response = await http.get(url);
     final data = jsonDecode(utf8.decode(response.bodyBytes));
 
@@ -69,7 +69,7 @@ class _ShoeslistpageState extends State<Shoeslistpage> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.network(
-                    'http://127.0.0.1:8000/view/${product['pid']}?t=${DateTime.now().millisecondsSinceEpoch}',
+                    'http://192.168.50.236:8000/view/${product['pid']}?t=${DateTime.now().millisecondsSinceEpoch}',
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) => Container(
                       color: Colors.grey[300],

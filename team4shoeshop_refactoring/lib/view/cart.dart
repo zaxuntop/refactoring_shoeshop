@@ -25,7 +25,7 @@ class _CartPageState extends State<CartPage> {
 
   Future<void> fetchCartItems() async {
     final cid = box.read('p_userId');
-    final url = Uri.parse("http://127.0.0.1:8000/cart_items?cid=$cid");
+    final url = Uri.parse("http://192.168.50.236:8000/cart_items?cid=$cid");
     final response = await http.get(url);
 
     try {
@@ -53,7 +53,7 @@ class _CartPageState extends State<CartPage> {
   }
 
   Future<void> deleteItem(int oid) async {
-    final url = Uri.parse("http://127.0.0.1:8000/delete_cart_item/$oid");
+    final url = Uri.parse("http://192.168.50.236:8000/delete_cart_item/$oid");
     final response = await http.delete(url);
     final data = json.decode(utf8.decode(response.bodyBytes));
     if (data["result"] == "OK") {
@@ -73,7 +73,7 @@ class _CartPageState extends State<CartPage> {
     final selectedItems = items.where((item) => selectedOids.contains(item["oid"])).toList();
     final cid = box.read('p_userId');
 
-    final res = await http.get(Uri.parse("http://127.0.0.1:8000/customer_info?cid=$cid"));
+    final res = await http.get(Uri.parse("http://192.168.50.236:8000/customer_info?cid=$cid"));
     final data = json.decode(utf8.decode(res.bodyBytes));
 
     if (data["result"] != "OK" ||

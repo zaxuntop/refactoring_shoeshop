@@ -9,6 +9,7 @@ class ShoesDetailPage extends StatefulWidget {
   final Map<String, dynamic> product;
   final int selectedSize;
 
+
   const ShoesDetailPage({
     required this.product,
     required this.selectedSize,
@@ -22,6 +23,7 @@ class ShoesDetailPage extends StatefulWidget {
 class _ShoesDetailPageState extends State<ShoesDetailPage> {
   final box = GetStorage();
   int quantity = 1;
+  int pstock = item['pstock'];
   List<Map<String, dynamic>> dealers = [];
   String? selectedDealer;
   
@@ -33,7 +35,7 @@ class _ShoesDetailPageState extends State<ShoesDetailPage> {
   }
 
   Future<void> fetchDealers() async {
-    final url = Uri.parse("http://127.0.0.1:8000/employee_list");
+    final url = Uri.parse("http://192.168.50.236:8000/employee_list");
     final response = await http.get(url);
     final data = json.decode(utf8.decode(response.bodyBytes));
 
@@ -56,7 +58,7 @@ class _ShoesDetailPageState extends State<ShoesDetailPage> {
       return;
     }
 
-    final url = Uri.parse("http://127.0.0.1:8000/add_to_cart");
+    final url = Uri.parse("http://192.168.50.236:8000/add_to_cart");
     final request = http.MultipartRequest("POST", url);
     request.fields["cid"] = cid;
     request.fields["pid"] = widget.product["pid"];
@@ -80,7 +82,7 @@ class _ShoesDetailPageState extends State<ShoesDetailPage> {
 
     // 카드 정보 확인
     final res = await http.get(
-      Uri.parse("http://127.0.0.1:8000/customer_info?cid=$cid"),
+      Uri.parse("http://192.168.50.236:8000/customer_info?cid=$cid"),
     );
     final data = json.decode(utf8.decode(res.bodyBytes));
 
@@ -113,10 +115,20 @@ class _ShoesDetailPageState extends State<ShoesDetailPage> {
   Widget build(BuildContext context) {
     final product = widget.product;
     final imageUrl =
-        "http://127.0.0.1:8000/view/${product['pid']}?t=${DateTime.now().millisecondsSinceEpoch}";
+        "http://192.168.50.236:8000/view/${product['pid']}?t=${DateTime.now().millisecondsSinceEpoch}";
 
     return Scaffold(
-      appBar: AppBar(title: const Text("상품 상세")),
+      appBar: AppBar(
+        title: Text("상품 상세"),
+        actions: [
+          IconButton(
+            onPressed: () {
+              //
+            },
+            icon: Icon(Icons.card_travel)
+            )
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -149,11 +161,11 @@ class _ShoesDetailPageState extends State<ShoesDetailPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text("수량", style: TextStyle(fontWeight: FontWeight.bold)),
+                Text("수량", style: TextStyle(fontWeight: FontWeight.bold)),
                 DropdownButton<int>(
                   value: quantity,
                   items:
-                      List.generate(10, (i) => i + 1)
+                      List.generate('pstock', (i) => i + 1)
                           .map(
                             (e) =>
                                 DropdownMenuItem(value: e, child: Text("$e")),

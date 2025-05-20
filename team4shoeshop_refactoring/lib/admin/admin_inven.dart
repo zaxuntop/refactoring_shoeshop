@@ -30,7 +30,7 @@ class _AdminInvenPageState extends State<AdminInvenPage> {
 
   void _fetchInventory() async {
     try {
-      final uri = Uri.parse('http://127.0.0.1:8000/a_inventory');
+      final uri = Uri.parse('http://192.168.50.236:8000/a_inventory');
       final response = await http.get(
         uri,
         headers: {

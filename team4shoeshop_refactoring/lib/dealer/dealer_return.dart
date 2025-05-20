@@ -23,7 +23,7 @@ class _DealerReturnState extends State<DealerReturn> {
   }
 
 Future<void> getReturnData() async {
-  var response = await http.get(Uri.parse('http://127.0.0.1:8000/dreturns'));
+  var response = await http.get(Uri.parse('http://192.168.50.236:8000/dreturns'));
   final all = json.decode(utf8.decode(response.bodyBytes))['results'];
 
   data = all.where((item) {

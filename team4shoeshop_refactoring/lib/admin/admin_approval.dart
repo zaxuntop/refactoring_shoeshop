@@ -27,7 +27,7 @@ class _AdminApprovalState extends State<AdminApproval> {
   }
 
     getJSONData()async{
-    var response = await http.get(Uri.parse("http://127.0.0.1:8000/a_select"));
+    var response = await http.get(Uri.parse("http://192.168.50.236:8000/a_select"));
     aData.clear();
     aData.addAll(json.decode(utf8.decode(response.bodyBytes))['approvals']);
     setState(() {});
@@ -295,7 +295,7 @@ ${approval['adate']} | ${approval['pstock']}""",
   // }
   
   update2Approval(approval)async{
-    var request = http.MultipartRequest("POST", Uri.parse('http://127.0.0.1:8000/a_update_2'));
+    var request = http.MultipartRequest("POST", Uri.parse('http://192.168.50.236:8000/a_update_2'));
 
     request.fields['astatus'] = "팀장승인";
     request.fields['ateamappdate'] = "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
@@ -305,7 +305,7 @@ ${approval['adate']} | ${approval['pstock']}""",
   }
 
   update3Approval(approval)async{
-    var request = http.MultipartRequest("POST", Uri.parse('http://127.0.0.1:8000/a_update_3'));
+    var request = http.MultipartRequest("POST", Uri.parse('http://192.168.50.236:8000/a_update_3'));
 
     request.fields['astatus'] = '임원승인';
     request.fields['achiefappdate'] = "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
@@ -389,7 +389,7 @@ ${approval['adate']} | ${approval['pstock']}""",
   }
 
     getJSONDataDelete(int aid)async{
-    var response = await http.delete(Uri.parse("http://127.0.0.1:8000/a_delete/$aid"));
+    var response = await http.delete(Uri.parse("http://192.168.50.236:8000/a_delete/$aid"));
     var result = json.decode(utf8.decode(response.bodyBytes))['result'];
     if(result != "OK"){
       errorSnackBar();

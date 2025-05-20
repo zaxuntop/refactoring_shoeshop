@@ -28,7 +28,7 @@ class _AdminDealerRevenueState extends State<AdminDealerRevenue> {
   Future<void> fetchChartData() async {
     try {
       final url = Uri.parse(
-        'http://127.0.0.1:8000/dealer_revenue?year=$selectedYear&month=$selectedMonth',
+        'http://192.168.50.236:8000/dealer_revenue?year=$selectedYear&month=$selectedMonth',
       );
 
       final response = await http.get(url);

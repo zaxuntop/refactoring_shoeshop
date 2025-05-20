@@ -28,7 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  remedi_kopo: ^0.0.2
+ # remedi_kopo: ^0.0.2
 
   flutter:
     sdk: flutter
@@ -47,7 +47,7 @@ dependencies:
   flutter_map: ^8.1.1
 
   # 지도를 현위치로 옮기기
-  latlong2: ^0.9.1  
+  latlong2: ^0.9.1
 
   # SQLite
   sqflite: ^2.3.0

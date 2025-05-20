@@ -22,7 +22,7 @@ class _ReturnsState extends State<Returns> {
 
   Future<void> fetchReturns() async {
     final cid = box.read('p_userId');
-    final url = Uri.parse('http://127.0.0.1:8000/returns?cid=$cid');
+    final url = Uri.parse('http://192.168.50.236:8000/returns?cid=$cid');
     final response = await http.get(url);
     final data = json.decode(utf8.decode(response.bodyBytes));
 

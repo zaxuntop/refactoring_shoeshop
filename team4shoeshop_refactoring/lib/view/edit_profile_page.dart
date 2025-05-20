@@ -42,7 +42,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       return;
     }
 
-    final url = Uri.parse('http://127.0.0.1:8000/customer_info?cid=$userId');
+    final url = Uri.parse('http://192.168.50.236:8000/customer_info?cid=$userId');
     final response = await http.get(url);
     final data = json.decode(utf8.decode(response.bodyBytes));
 
@@ -70,7 +70,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Future<void> _updateProfile() async {
-    final url = Uri.parse('http://127.0.0.1:8000/update_customer');
+    final url = Uri.parse('http://192.168.50.236:8000/update_customer');
     final request = http.MultipartRequest('POST', url);
 
     final cardDateText = cardDateController.text.trim();

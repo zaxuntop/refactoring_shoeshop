@@ -36,13 +36,13 @@ class _DealerMainState extends State<DealerMain> {
   }
 
   Future<void> fetchDistrictName() async {
-    final response = await http.get(Uri.parse('http://127.0.0.1:8000/district?eid=$eid'));
+    final response = await http.get(Uri.parse('http://192.168.50.236:8000/district?eid=$eid'));
     final result = json.decode(utf8.decode(response.bodyBytes));
     dadminname = result['ename'] ?? '';
   }
 
   Future<void> fetchOrderData() async {
-    final response = await http.get(Uri.parse('http://127.0.0.1:8000/list'));
+    final response = await http.get(Uri.parse('http://192.168.50.236:8000/list'));
     final all = json.decode(utf8.decode(response.bodyBytes))['results'] ?? [];
 
     data = all.where((item) {

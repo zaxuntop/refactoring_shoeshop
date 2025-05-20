@@ -44,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    final url = Uri.parse("http://127.0.0.1:8000/login");
+    final url = Uri.parse("http://192.168.50.236:8000/login");
     final request = http.MultipartRequest('POST', url);
     request.fields['cid'] = id;
     request.fields['cpassword'] = pw;

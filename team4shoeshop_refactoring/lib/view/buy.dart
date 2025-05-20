@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
-import 'shoeslistpage.dart'; // ✅ 추가
+import 'shoeslistpage.dart';
 
 class BuyPage extends StatefulWidget {
   const BuyPage({super.key});
@@ -51,7 +51,7 @@ class _BuyPageState extends State<BuyPage> {
 
       final request = http.MultipartRequest(
         "POST",
-        Uri.parse("http://127.0.0.1:8000/buy_direct"),
+        Uri.parse("http://192.168.50.236:8000/buy_direct"),
       );
       request.fields["cid"] = cid;
       request.fields["pid"] = product["pid"];
@@ -75,7 +75,7 @@ class _BuyPageState extends State<BuyPage> {
 
       final request = http.MultipartRequest(
         "POST",
-        Uri.parse("http://127.0.0.1:8000/buy_selected"),
+        Uri.parse("http://192.168.50.236:8000/buy_selected"),
       );
       request.fields["cid"] = cid;
       request.fields["items"] = encodedItems;

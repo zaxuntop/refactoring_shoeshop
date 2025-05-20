@@ -31,9 +31,9 @@ class _AdminMainState extends State<AdminMain> {
   }
 
     getJSONData()async{
-    var response = await http.get(Uri.parse("http://127.0.0.1:8000/a_low_stock"));
-    var response1 = await http.get(Uri.parse("http://127.0.0.1:8000/a_today_sales"));
-    var response2 = await http.get(Uri.parse("http://127.0.0.1:8000/a_yesterday_sales"));
+    var response = await http.get(Uri.parse("http://192.168.50.236:8000/a_low_stock"));
+    var response1 = await http.get(Uri.parse("http://192.168.50.236:8000/a_today_sales"));
+    var response2 = await http.get(Uri.parse("http://192.168.50.236:8000/a_yesterday_sales"));
     lowStock = 0;
     todaySales = 0;
     yesterdaySales = 0;

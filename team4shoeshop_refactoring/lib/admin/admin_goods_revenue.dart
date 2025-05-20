@@ -21,7 +21,7 @@ class _AdminGoodsRevenueState extends State<AdminGoodsRevenue> {
 
   Future<void> fetchChartData() async {
     try {
-      final response = await http.get(Uri.parse("http://127.0.0.1:8000/goods_revenue"));
+      final response = await http.get(Uri.parse("http://192.168.50.236:8000/goods_revenue"));
       final data = json.decode(utf8.decode(response.bodyBytes));
 
       if (data['result'] != null && data['result'] is List) {

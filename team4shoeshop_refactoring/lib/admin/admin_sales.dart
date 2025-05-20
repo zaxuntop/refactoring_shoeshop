@@ -22,7 +22,7 @@ class _AdminSalesState extends State<AdminSales> {
 
 Future fetchSalesData()async{
   try{
-    var response = await http.get(Uri.parse('http://127.0.0.1:8000/a_dealer_sales'));
+    var response = await http.get(Uri.parse('http://192.168.50.236:8000/a_dealer_sales'));
     if (response.statusCode == 200){
       final data = json.decode(utf8.decode(response.bodyBytes));
       salesData = data['result'];

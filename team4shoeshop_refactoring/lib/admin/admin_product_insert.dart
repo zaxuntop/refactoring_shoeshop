@@ -52,7 +52,7 @@ class _AdminProductInsertPageState extends State<AdminProductInsertPage> {
       return;
     }
 
-    final uri = Uri.parse('http://127.0.0.1:8000/a_product_insert');
+    final uri = Uri.parse('http://192.168.50.236:8000/a_product_insert');
     final request = http.MultipartRequest('POST', uri);
 
     request.fields['pid'] = _pid.text.trim();

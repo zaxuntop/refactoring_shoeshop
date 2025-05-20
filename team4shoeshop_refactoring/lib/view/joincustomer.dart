@@ -38,7 +38,7 @@ class _JoincustomerState extends State<Joincustomer> {
     }
 
     try {
-      final url = Uri.parse("http://127.0.0.1:8000/check_customer_id?cid=$cid");
+      final url = Uri.parse("http://192.168.50.236:8000/check_customer_id?cid=$cid");
       final response = await http.get(url);
       final data = json.decode(utf8.decode(response.bodyBytes));
 
@@ -72,7 +72,7 @@ class _JoincustomerState extends State<Joincustomer> {
       return;
     }
 
-    final url = Uri.parse("http://127.0.0.1:8000/insert_customer");
+    final url = Uri.parse("http://192.168.50.236:8000/insert_customer");
     final request = http.MultipartRequest('POST', url);
 
     request.fields['cid'] = cidController.text.trim();

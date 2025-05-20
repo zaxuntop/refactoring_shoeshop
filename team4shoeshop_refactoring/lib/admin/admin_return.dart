@@ -13,7 +13,7 @@ class AdminReturn extends StatefulWidget {
 
 class _AdminReturnState extends State<AdminReturn> {
   Future<List<Map<String, dynamic>>> fetchReturnedOrders() async {
-    final url = Uri.parse('http://127.0.0.1:8000/return_orders');
+    final url = Uri.parse('http://192.168.50.236:8000/return_orders');
     final response = await http.get(url);
     final data = json.decode(utf8.decode(response.bodyBytes));
 
