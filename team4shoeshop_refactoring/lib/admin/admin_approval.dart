@@ -5,6 +5,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:team4shoeshop_refactoring/admin/admin_add_approval.dart';
 import 'package:team4shoeshop_refactoring/admin/widget/admin_drawer.dart';
 
 class AdminApproval extends StatefulWidget {
@@ -52,7 +53,8 @@ Widget build(BuildContext context) {
             onPressed: () async{
               final adminPermission = box.read('adminPermission');
               if(adminPermission == 1){
-                // await Get.to(AdminAddApproval());
+                await Get.to(AdminAddApproval());
+                await getJSONData();
                 setState(() {});
               }else{
                 Get.snackbar(
@@ -79,7 +81,7 @@ Widget build(BuildContext context) {
             child: Center(
               child: Text("""문서 번호 | 문서 상태 | 브랜드
 상품명 | 색상 | 사이즈 | 발주 수량
-작성일 | 현재 재고""",
+작성일 | 작성자 | 현재 재고""",
               textAlign: TextAlign.center,
               ),
             ),
@@ -128,7 +130,7 @@ Widget build(BuildContext context) {
                                   child: Text(
                                     """${approval['aid']} | ${approval['astatus']} | ${approval['pbrand']}
 ${approval['pname']} | ${approval['pcolor']} | ${approval['psize']} | ${approval['abaljoo']}
-${approval['adate']} | ${approval['pstock']}""",
+${approval['adate']} | ${approval['aeid']} | ${approval['pstock']}""",
                                     style: const TextStyle(fontSize: 16),
                                     textAlign: TextAlign.center,
                                   ),

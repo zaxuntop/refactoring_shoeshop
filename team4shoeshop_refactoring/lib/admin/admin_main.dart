@@ -2,7 +2,6 @@
 2025.05.05 이학현 / admin 폴더, admin 로그인 후 넘어오는 메인 화면 생성
 */
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
@@ -22,12 +21,16 @@ class _AdminMainState extends State<AdminMain> {
   int lowStock = 0;
   int todaySales = 0;
   int yesterdaySales = 0;
+  int approval = 0;
+  int returnCount = 0;
 
   @override
   void initState() {
     super.initState();
+    final permission = box.read('adminPermission');
     // handler = DatabaseHandler();
     getJSONData();
+    getApprovalCount(permission);
   }
 
     getJSONData()async{
@@ -40,8 +43,15 @@ class _AdminMainState extends State<AdminMain> {
     lowStock = (json.decode(utf8.decode(response.bodyBytes))['result']);
     todaySales = (json.decode(utf8.decode(response1.bodyBytes))['result'])??0;
     yesterdaySales = (json.decode(utf8.decode(response2.bodyBytes))['result'])??0;
+    returnCount = (json.decode(utf8.decode(response4.bodyBytes))['result'])??0;
     setState(() {});
     // print(aData); // 데이터 잘 들어오는지 확인용
+  }
+
+    getApprovalCount(int permission)async{
+    var response3 = await http.get(Uri.parse("http://127.0.0.1:8000/a_approval_count/$permission"));
+    approval = (json.decode(utf8.decode(response3.bodyBytes))['result'])??0;
+    setState(() {});
   }
 
   @override
@@ -117,7 +127,7 @@ Container(
               height: 80,
               width: 300,
               child: Center(
-                child: Text("결재할 문서가 $lowStock건 있습니다.",
+                child: Text("결재할 문서가 $approval건 있습니다.",
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 16),
                 ),
@@ -136,7 +146,7 @@ Container(
             height: 80,
             width: 300,
             child: Center(
-              child: Text("반품 접수가 $lowStock건 있습니다.",
+              child: Text("반품 접수가 $returnCount건 있습니다.",
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16),
               ),
