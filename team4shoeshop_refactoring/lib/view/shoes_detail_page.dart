@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:team4shoeshop_refactoring/view/cart.dart';
 import 'buy.dart';
 
 class ShoesDetailPage extends StatefulWidget {
@@ -23,7 +24,6 @@ class ShoesDetailPage extends StatefulWidget {
 class _ShoesDetailPageState extends State<ShoesDetailPage> {
   final box = GetStorage();
   int quantity = 1;
-  int pstock = item['pstock'];
   List<Map<String, dynamic>> dealers = [];
   String? selectedDealer;
   
@@ -123,7 +123,9 @@ class _ShoesDetailPageState extends State<ShoesDetailPage> {
         actions: [
           IconButton(
             onPressed: () {
-              //
+              Get.to(() => CartPage(), arguments: {
+                'userID': box.read('p_userId')
+              });
             },
             icon: Icon(Icons.card_travel)
             )
@@ -165,7 +167,7 @@ class _ShoesDetailPageState extends State<ShoesDetailPage> {
                 DropdownButton<int>(
                   value: quantity,
                   items:
-                      List.generate('pstock', (i) => i + 1)
+                      List.generate(product["pstock"], (i) => i + 1)
                           .map(
                             (e) =>
                                 DropdownMenuItem(value: e, child: Text("$e")),
